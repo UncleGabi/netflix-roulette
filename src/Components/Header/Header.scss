@@ -1,0 +1,76 @@
+.header {
+  position: relative;
+  height: 400px;
+  margin-bottom: 10px;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url("../../Assets/images/header-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  &__title {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 40px;
+    color: #f65261;
+    z-index: 2;
+
+    &-logo {
+      font-size: 20px;
+
+      span {
+        font-weight: bold;
+      }
+    }
+
+    button {
+      width: 180px;
+      height: 45px;
+      background: #606060ad;
+      color: #f65261;
+      font-size: 20px;
+      text-transform: uppercase;
+      border: 1px solid #606060ad;
+      cursor: pointer;
+    }
+  }
+
+  &__search-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: fit-content;
+    color: white;
+
+    h2 {
+      font-size: 30px;
+      font-weight: 300;
+      margin-bottom: 30px;
+      text-transform: uppercase;
+    }
+
+    input {
+      width: 650px;
+      height: 55px;
+      margin-right: 10px;
+      padding-left: 20px;
+      background: rgba($color: #323232cc, $alpha: 0.8);
+      color: #fff;
+      font-size: 20px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      width: 235px;
+      height: 55px;
+      background-color: #f65261;
+      color: #fff;
+      font-size: 20px;
+      border: none;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+  }
+}

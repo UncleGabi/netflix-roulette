@@ -1,0 +1,43 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 40px;
+
+  h1 {
+    margin: 10px 0;
+    color: #ccc;
+    font-size: 25px;
+    font-weight: 300;
+    text-transform: uppercase;
+  }
+
+  ol {
+    counter-reset: item;
+    list-style-type: none;
+
+    li {
+      font-size: 20px;
+      margin-left: 30px;
+
+      &::before {
+        content: counter(item) " ";
+        counter-increment: item;
+        position: relative;
+        top: 23px;
+        right: 30px;
+        font-size: 20px;
+        color: #76cdd8;
+      }
+
+      .title {
+        color: #fff;
+        font-weight: bold;
+      }
+    }
+
+    .description {
+      font-size: 15px;
+      color: #e4e4e4;
+    }
+  }
+}
