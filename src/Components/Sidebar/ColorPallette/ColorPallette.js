@@ -12,15 +12,15 @@ const colorData = [
     background: "424242",
   },
   {
-    id: 1,
+    id: 3,
     background: "232323",
   },
   {
-    id: 1,
+    id: 4,
     background: "555555",
   },
   {
-    id: 1,
+    id: 5,
     background: "FFFFFF",
   },
 ];
