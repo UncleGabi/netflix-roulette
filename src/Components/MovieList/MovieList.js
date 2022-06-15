@@ -22,26 +22,65 @@ function MovieList({ movieData }) {
   const [sortedMovieData, setSortedMovieData] = useState(movieData);
   const [openModal, setOpenModal] = useState(undefined);
   const [openDropdown, setOpenDropdown] = useState(false);
-  const [sorting, setSorting] = useState({ by: "", dir: "" });
+  const [sorting, _setSorting] = useState({ by: "", dir: "" });
+
+  const setSorting = ({ by, dir }) => {
+    let direction = "asc";
+    _setSorting((prevState) => {
+      if (prevState.by === by) {
+        switch (prevState.dir) {
+          case "asc":
+            direction = "desc";
+            break;
+          case "desc":
+            direction = "";
+            break;
+          case "":
+            direction = "asc";
+            break;
+          default:
+            direction = "";
+            break;
+        }
+
+        return { by, dir: direction };
+      } else {
+        return { by, dir };
+      }
+    });
+  };
 
   useEffect(() => {
-    const sortMovieData = ({ by, dir }) => {
-      const test = sortedMovieData.sort((a, b) => {
-        if (a[by] > b[by]) {
-          return dir === "asc" ? 1 : -1;
-        } else if (a[by] < b[by]) {
-          return dir === "asc" ? -1 : 1;
+    if (sorting.dir.length) {
+      const sortMovieData = ({ by, dir }) => {
+        const sortedData = sortedMovieData.sort((a, b) => {
+          if (a[by] > b[by]) {
+            return dir === "asc" ? 1 : -1;
+          } else if (a[by] < b[by]) {
+            return dir === "asc" ? -1 : 1;
+          } else {
+            return 0;
+          }
+        });
+
+        setSortedMovieData(sortedData);
+      };
+
+      sortMovieData({ by: sorting.by, dir: sorting.dir });
+      setOpenDropdown(false);
+    } else {
+      const unsortedMovieData = sortedMovieData.sort((a, b) => {
+        if (a.id > b.id) {
+          return 1;
         } else {
-          return 0;
+          return -1;
         }
       });
 
-      setSortedMovieData(test);
-    };
-
-    sortMovieData({ by: sorting.by, dir: sorting.dir });
-    setOpenDropdown(false);
-  }, [sorting, sortedMovieData]);
+      setSortedMovieData(unsortedMovieData);
+      setOpenDropdown(false);
+    }
+  }, [sorting, sortedMovieData, movieData]);
 
   return (
     <main className="movies__container">
@@ -57,14 +96,13 @@ function MovieList({ movieData }) {
           <div className="sort">Sort by</div>
           <div className="release-date">
             <div onClick={() => setOpenDropdown(!openDropdown)}>
-              {sorting.by
+              {sorting.dir
                 ? sortingDropdownData.find((item) => item.key === sorting.by)
                     .label
-                : "Filter"}
+                : "Select"}
               <span className="down-arrow" />{" "}
             </div>
             {openDropdown && (
-              // még fixálni kell, hogy jót mutasson
               <div className="sort-dropdown">
                 <div
                   onClick={() => {
