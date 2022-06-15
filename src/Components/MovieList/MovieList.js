@@ -7,37 +7,30 @@ import MovieCard from "../MovieCard/MovieCard";
 
 import "./MoviesList.scss";
 
+const sortingDropdownData = [
+  {
+    key: "title",
+    label: "Title",
+  },
+  {
+    key: "releaseYear",
+    label: "Release date",
+  },
+];
+
 function MovieList({ movieData }) {
   const [sortedMovieData, setSortedMovieData] = useState(movieData);
   const [openModal, setOpenModal] = useState(undefined);
   const [openDropdown, setOpenDropdown] = useState(false);
-  const [sorting, setSorting] = useState({ by: "releaseYear", dir: "asc" });
+  const [sorting, setSorting] = useState({ by: "", dir: "" });
 
   useEffect(() => {
-    console.log(sorting);
     const sortMovieData = ({ by, dir }) => {
       const test = sortedMovieData.sort((a, b) => {
-        let direction = "asc";
-        if (direction === dir) {
-          switch (dir) {
-            case "asc":
-              direction = "desc";
-              break;
-            case "":
-              direction = "asc";
-              break;
-            case "desc":
-              direction = "";
-              break;
-            default:
-              break;
-          }
-        }
-
         if (a[by] > b[by]) {
-          return direction === "asc" ? 1 : -1;
+          return dir === "asc" ? 1 : -1;
         } else if (a[by] < b[by]) {
-          return direction === "asc" ? -1 : 1;
+          return dir === "asc" ? -1 : 1;
         } else {
           return 0;
         }
@@ -47,7 +40,8 @@ function MovieList({ movieData }) {
     };
 
     sortMovieData({ by: sorting.by, dir: sorting.dir });
-  }, [sorting]);
+    setOpenDropdown(false);
+  }, [sorting, sortedMovieData]);
 
   return (
     <main className="movies__container">
@@ -63,26 +57,25 @@ function MovieList({ movieData }) {
           <div className="sort">Sort by</div>
           <div className="release-date">
             <div onClick={() => setOpenDropdown(!openDropdown)}>
-              Release date <span className="down-arrow" />{" "}
+              {sorting.by
+                ? sortingDropdownData.find((item) => item.key === sorting.by)
+                    .label
+                : "Filter"}
+              <span className="down-arrow" />{" "}
             </div>
             {openDropdown && (
+              // még fixálni kell, hogy jót mutasson
               <div className="sort-dropdown">
                 <div
                   onClick={() => {
-                    if (openDropdown) {
-                      setSorting({ by: "title", dir: "asc" });
-                      setOpenDropdown(false);
-                    }
+                    setSorting({ by: "title", dir: "asc" });
                   }}
                 >
                   Title
                 </div>
                 <div
                   onClick={() => {
-                    if (openDropdown) {
-                      setSorting({ by: "releaseYear", dir: "asc" });
-                      setOpenDropdown(false);
-                    }
+                    setSorting({ by: "releaseYear", dir: "asc" });
                   }}
                 >
                   Release date
