@@ -55,6 +55,7 @@
     }
 
     .movies-handler {
+      position: relative;
       display: flex;
       align-items: center;
       font-size: 16px;
@@ -80,6 +81,27 @@
           border-radius: 1px;
         }
       }
+
+      & .sort-dropdown {
+        position: absolute;
+        top: 35px;
+        width: 150px;
+        height: fit-content;
+        padding: 10px 0;
+        background-color: #232323;
+        border: 1px solid #555;
+        z-index: 5;
+
+        div {
+          width: 100%;
+          margin: 5px 0;
+          padding: 10px;
+
+          &:hover {
+            background-color: #f65261;
+          }
+        }
+      }
     }
 
     .movies-found {
@@ -87,45 +109,6 @@
 
       span {
         font-weight: bold;
-      }
-    }
-
-    .movies-list {
-      display: grid;
-      grid-template-columns: repeat(3, 400px);
-      justify-content: center;
-      gap: 30px;
-      padding-bottom: 20px;
-
-      .movie-card {
-        margin-top: 0px;
-
-        img {
-          width: 100%;
-          height: 500px;
-        }
-
-        .movie-details {
-          display: flex;
-          justify-content: space-between;
-          margin: 15px 0 5px;
-          font-size: 14px;
-
-          .movie-title {
-            font-weight: 500;
-            font-size: 18px;
-          }
-
-          .release-year {
-            padding: 5px 10px;
-            border: 1px solid #979797;
-            border-radius: 3px;
-          }
-        }
-
-        .genres {
-          color: #979797;
-        }
       }
     }
   }
