@@ -2,8 +2,13 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   justify-content: center;
-  gap: 30px;
+  gap: 100px;
   width: 90%;
-  margin: 0 auto;
+  max-height: 1000px;
+  overflow: auto;
   padding-bottom: 20px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

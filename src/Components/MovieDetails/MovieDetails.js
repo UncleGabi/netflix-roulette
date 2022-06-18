@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -6,6 +6,13 @@ import "./MovieDetails.scss";
 
 const MovieDetails = ({ selectedMovieData, setSelectedMovieData }) => {
   const genre = selectedMovieData.genre.join(" & ");
+
+  useEffect(() => {
+    if (JSON.stringify(selectedMovieData) !== "{}") {
+      const header = document.querySelector("#header");
+      header.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [selectedMovieData]);
 
   return (
     <div id="header" className="movie-data">
