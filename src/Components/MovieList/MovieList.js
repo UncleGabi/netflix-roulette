@@ -18,7 +18,7 @@ const sortingDropdownData = [
   },
 ];
 
-function MovieList({ movieData }) {
+function MovieList({ movieData, setSelectedMovieData }) {
   const [sortedMovieData, setSortedMovieData] = useState(movieData);
   const [openModal, setOpenModal] = useState(undefined);
   const [openDropdown, setOpenDropdown] = useState(false);
@@ -135,9 +135,13 @@ function MovieList({ movieData }) {
               title={movie.title}
               src={movie.src}
               genre={movie.genre}
+              rating={movie.rating}
               releaseYear={movie.releaseYear}
+              duration={movie.duration}
+              overview={movie.overview}
               openModal={openModal}
               setOpenModal={setOpenModal}
+              setSelectedMovieData={setSelectedMovieData}
             />
           );
         })}

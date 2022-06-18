@@ -1,7 +1,14 @@
 .movies-list {
   display: grid;
-  grid-template-columns: repeat(3, 400px);
+  grid-template-columns: repeat(3, 1fr);
   justify-content: center;
-  gap: 30px;
+  gap: 100px;
+  width: 90%;
+  max-height: 1000px;
+  overflow: auto;
   padding-bottom: 20px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
