@@ -6,11 +6,17 @@ import "./MovieDetails.scss";
 
 const MovieDetails = ({ selectedMovieData, setSelectedMovieData }) => {
   const genre = selectedMovieData.genre.join(" & ");
+  const minConverter = (minutes) => {
+    const hrs = Math.floor(minutes / 60);
+    const mins = minutes - hrs * 60;
+    return `${hrs}h ${mins}min`;
+  };
 
   useEffect(() => {
     if (JSON.stringify(selectedMovieData) !== "{}") {
       const header = document.querySelector("#header");
       header.scrollIntoView({ behavior: "smooth", block: "center" });
+      minConverter(selectedMovieData.duration);
     }
   }, [selectedMovieData]);
 
@@ -32,7 +38,7 @@ const MovieDetails = ({ selectedMovieData, setSelectedMovieData }) => {
           </div>
           <div className="release-duration">
             <div className="release">{selectedMovieData.releaseYear}</div>
-            <div className="duration">{selectedMovieData.duration}</div>
+            <div className="duration">{minConverter(selectedMovieData.duration)}</div>
           </div>
           <div className="overview">{selectedMovieData.overview}</div>
         </div>

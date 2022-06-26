@@ -53,7 +53,6 @@ const MovieCard = ({
           />
         )}
       </div>
-      {/* <a href="#header"> */}
       <img
         onClick={() =>
           setSelectedMovieData({
@@ -69,7 +68,6 @@ const MovieCard = ({
         src={`${src}`}
         alt={`${title}`}
       />
-      {/* </a> */}
       <div className="movie-details">
         <div className="movie-title">{title}</div>
         <div className="release-year">{releaseYear}</div>

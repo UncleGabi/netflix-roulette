@@ -1,4 +1,10 @@
 import React, { useState } from "react";
+import {
+  filterMovies,
+  selectAllMovies,
+  setMovies,
+} from "../../Redux/MoviesSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 import Modal from "../Common/Modal/Modal";
 import Form from "../Common/Modal/Form/Form";
@@ -7,6 +13,17 @@ import "./Header.scss";
 
 const Header = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [title, setTitle] = useState("");
+  const dispatch = useDispatch();
+  const { movies } = useSelector(selectAllMovies);
+
+  const handleChange = (e) => {
+    setTitle(e.target.value);
+  };
+
+  const handleSearch = () => {
+    dispatch(filterMovies(title));
+  };
 
   return (
     <header className="header">
@@ -19,8 +36,24 @@ const Header = () => {
       <div className="header__search-container">
         <h2>Find your movie</h2>
         <div>
-          <input type="text" placeholder="What do you want to watch?" />
-          <button>Search</button>
+          <input
+            type="text"
+            placeholder="What do you want to watch?"
+            value={title}
+            onChange={handleChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+
+              if (e.key === "Escape") {
+                setTitle("");
+                dispatch(setMovies(movies));
+              }
+            }}
+            autoFocus
+          />
+          <button onClick={handleSearch}>Search</button>
         </div>
       </div>
       {openModal && (
