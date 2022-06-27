@@ -16,14 +16,20 @@ const MoviesSlice = createSlice({
         filteredMovies: action.payload,
       };
     },
+    searchMovies: (state, { payload }) => {
+      state.filteredMovies = state.movies.filter(({ title }) => {
+        return title.toLowerCase().includes(payload.toLowerCase());
+      });
+    },
     filterMovies: (state, action) => {
-      if (action.payload) {
+      const payload = action.payload.toLowerCase();
+      if (payload === "all") {
+        state.filteredMovies = state.movies;
+      } else {
         state.filteredMovies = state.movies.filter(({ genres }) => {
           const lowecaseGenres = genres.map((genre) => genre.toLowerCase());
-          return lowecaseGenres.includes(action.payload.toLowerCase());
+          return lowecaseGenres.includes(payload);
         });
-      } else {
-        state.filteredMovies = state.movies;
       }
     },
     sortMovies: (state, { payload }) => {
@@ -41,6 +47,7 @@ const MoviesSlice = createSlice({
 });
 
 export const selectAllMovies = (state) => state.movies;
-export const { setMovies, filterMovies, sortMovies } = MoviesSlice.actions;
+export const { setMovies, filterMovies, sortMovies, searchMovies } =
+  MoviesSlice.actions;
 
 export default MoviesSlice.reducer;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  filterMovies,
+  searchMovies,
   selectAllMovies,
   setMovies,
 } from "../../Redux/MoviesSlice";
@@ -19,10 +19,11 @@ const Header = () => {
 
   const handleChange = (e) => {
     setTitle(e.target.value);
+    dispatch(searchMovies(e.target.value));
   };
 
   const handleSearch = () => {
-    dispatch(filterMovies(title));
+    dispatch(searchMovies(title));
   };
 
   return (

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
+  filterMovies,
   selectAllMovies,
   setMovies,
   sortMovies,
@@ -110,16 +111,24 @@ function MovieList({ setSelectedMovieData }) {
     }
   }, [sorting, sortedMovieData]);
 
+  const handleFiltering = (genre) => {
+    dispatch(filterMovies(genre));
+  };
+
+  const renderGenreFilterList = () => {
+    const genres = [
+      ...new Set(movieData.movies.map(({ genres }) => genres).flat()),
+    ].sort();
+
+    return ["All", ...genres].map((genre) => (
+      <li onClick={() => handleFiltering(genre)}>{genre}</li>
+    ));
+  };
+
   return (
     <main className="movies__container">
       <div className="movies-header">
-        <ul>
-          <li>All</li>
-          <li>Documentary</li>
-          <li>Comedy</li>
-          <li>Horror</li>
-          <li>Crime</li>
-        </ul>
+        <ul>{renderGenreFilterList()}</ul>
         <div className="movies-handler">
           <div className="sort">Sort by</div>
           <div className="release-date">
