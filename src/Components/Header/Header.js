@@ -3,7 +3,7 @@ import {
   searchMovies,
   selectAllMovies,
   setMovies,
-} from "../../Redux/MoviesSlice";
+} from "../../features/MoviesSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 import Modal from "../Common/Modal/Modal";

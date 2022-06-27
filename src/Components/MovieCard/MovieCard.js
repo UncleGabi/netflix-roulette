@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useDispatch } from "react-redux";
+import { setSelectedMovie } from "../../features/MoviesSlice";
 
 import "./MovieCard.scss";
 
@@ -8,15 +10,12 @@ const MovieCard = ({
   title,
   src,
   genre,
-  rating,
   releaseYear,
-  duration,
-  overview,
   openModal,
   setOpenModal,
-  setSelectedMovieData,
 }) => {
   const [editDropdownOpen, setEditDropdownOpen] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setEditDropdownOpen(false);
@@ -54,17 +53,9 @@ const MovieCard = ({
         )}
       </div>
       <img
-        onClick={() =>
-          setSelectedMovieData({
-            title,
-            src,
-            genre,
-            rating,
-            releaseYear,
-            duration,
-            overview,
-          })
-        }
+        onClick={() => {
+          dispatch(setSelectedMovie(id));
+        }}
         src={`${src}`}
         alt={`${title}`}
       />

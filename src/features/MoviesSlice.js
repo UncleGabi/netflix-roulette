@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   movies: [],
   filteredMovies: [],
+  selectedMovie: {},
 };
 
 const MoviesSlice = createSlice({
@@ -43,11 +44,25 @@ const MoviesSlice = createSlice({
         state.filteredMovies = state.movies;
       }
     },
+    setSelectedMovie: (state, { payload }) => {
+      if (payload === -1) {
+        state.selectedMovie = {};
+      } else {
+        state.selectedMovie = state.filteredMovies.find(
+          ({ id }) => id === payload
+        );
+      }
+    },
   },
 });
 
 export const selectAllMovies = (state) => state.movies;
-export const { setMovies, filterMovies, sortMovies, searchMovies } =
-  MoviesSlice.actions;
+export const {
+  setMovies,
+  filterMovies,
+  sortMovies,
+  searchMovies,
+  setSelectedMovie,
+} = MoviesSlice.actions;
 
 export default MoviesSlice.reducer;

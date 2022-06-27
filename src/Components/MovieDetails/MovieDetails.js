@@ -1,11 +1,17 @@
 import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { setSelectedMovie } from "../../features/MoviesSlice";
 
 import SearchIcon from "@mui/icons-material/Search";
 
 import "./MovieDetails.scss";
+import { selectAllMovies } from "../../features/MoviesSlice";
 
-const MovieDetails = ({ selectedMovieData, setSelectedMovieData }) => {
-  const genre = selectedMovieData.genre.join(" & ");
+const MovieDetails = () => {
+  const dispatch = useDispatch();
+  const selectedMovieData = useSelector(selectAllMovies).selectedMovie;
+
+  const genre = selectedMovieData.genres.join(" & ");
   const minConverter = (minutes) => {
     const hrs = Math.floor(minutes / 60);
     const mins = minutes - hrs * 60;
@@ -13,10 +19,10 @@ const MovieDetails = ({ selectedMovieData, setSelectedMovieData }) => {
   };
 
   useEffect(() => {
-    if (JSON.stringify(selectedMovieData) !== "{}") {
+    if (JSON.stringify(selectedMovieData[0]) !== "{}") {
       const header = document.querySelector("#header");
       header.scrollIntoView({ behavior: "smooth", block: "center" });
-      minConverter(selectedMovieData.duration);
+      minConverter(selectedMovieData.runtime);
     }
   }, [selectedMovieData]);
 
@@ -24,21 +30,23 @@ const MovieDetails = ({ selectedMovieData, setSelectedMovieData }) => {
     <div id="header" className="movie-data">
       <div className="movie-data__header">
         <div>netflixroulette</div>
-        <SearchIcon onClick={() => setSelectedMovieData({})} />
+        <SearchIcon onClick={() => dispatch(setSelectedMovie(-1))} />
       </div>
       <div className="movie-data__content">
-        <img src={`${selectedMovieData.src}`} alt="" />
+        <img src={`${selectedMovieData.poster_path}`} alt="" />
         <div className="movie-data__content-details">
           <div className="main-details">
             <div className="title-rating">
               <span className="title">{selectedMovieData.title}</span>
-              <span className="rating">{selectedMovieData.rating}</span>
+              <span className="rating">{selectedMovieData.vote_average}</span>
             </div>
             <div className="genre">{genre}</div>
           </div>
           <div className="release-duration">
-            <div className="release">{selectedMovieData.releaseYear}</div>
-            <div className="duration">{minConverter(selectedMovieData.duration)}</div>
+            <div className="release">{new Date(selectedMovieData.release_date).getFullYear()}</div>
+            <div className="duration">
+              {minConverter(selectedMovieData.runtime)}
+            </div>
           </div>
           <div className="overview">{selectedMovieData.overview}</div>
         </div>

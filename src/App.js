@@ -1,4 +1,5 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
+import { useSelector } from "react-redux";
 
 import Header from "./Components/Header/Header";
 import MovieDetails from "./Components/MovieDetails/MovieDetails";
@@ -7,23 +8,16 @@ import Footer from "./Components/Footer/Footer";
 import ErrorBoundary from "./Components/Common/ErrorBoundary/ErrorBoundary";
 
 import "./App.scss";
-
-// Movies props
-// id, budget, genres, overview, poster_path, release_date, revenue, runtime, tagline, title, vote_average, vote_count
+import { selectAllMovies } from "./features/MoviesSlice";
 
 const App = () => {
-  const [selectedMovieData, setSelectedMovieData] = useState({});
+  const selectedMovieData = useSelector(selectAllMovies).selectedMovie;
 
   const renderHeader = useCallback(() => {
     if (JSON.stringify(selectedMovieData) === "{}") {
       return <Header />;
     } else {
-      return (
-        <MovieDetails
-          selectedMovieData={selectedMovieData}
-          setSelectedMovieData={setSelectedMovieData}
-        />
-      );
+      return <MovieDetails />;
     }
   }, [selectedMovieData]);
 
@@ -32,9 +26,7 @@ const App = () => {
       <div className="content">
         {renderHeader()}
         <ErrorBoundary hasError={false}>
-          <MovieList
-            setSelectedMovieData={setSelectedMovieData}
-          />
+          <MovieList />
         </ErrorBoundary>
         <Footer />
       </div>

@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import DatePicker from "react-datepicker";
 
 import "./Form.scss";
 import "react-datepicker/dist/react-datepicker.css";
+import { selectAllMovies } from "../../../../features/MoviesSlice";
+import { CheckBox } from "@mui/icons-material";
 
 const Form = ({ title, src, genre, releaseYear }) => {
   const [movieTitle, setMovieTitle] = useState("");
@@ -12,6 +15,8 @@ const Form = ({ title, src, genre, releaseYear }) => {
   const [movieRating, setMovieRating] = useState("");
   const [movieRuntime, setMovieRuntime] = useState("");
   const [movieOverview, setMovieOverView] = useState("");
+
+  const { movies } = useSelector(selectAllMovies);
 
   const [startDate, setStartDate] = useState(new Date());
 
@@ -23,6 +28,20 @@ const Form = ({ title, src, genre, releaseYear }) => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const renderGenreOptions = () => {
+    const allGenres = [
+      ...new Set(movies.flatMap(({ genres }) => genres)),
+    ].sort();
+    return ["Select", ...allGenres].map((genre) => (
+      <option key={genre} id={genre} className="option">
+        <CheckBox />
+        {genre}
+      </option>
+    ));
+  };
+
+  renderGenreOptions();
 
   return (
     <>
@@ -66,13 +85,13 @@ const Form = ({ title, src, genre, releaseYear }) => {
         </div>
         <div className="input-container">
           <label htmlFor="genre">Genre</label>
-          <input
+          <select
             className="genre"
-            type=""
-            placeholder="Genre"
-            value={movieGenre}
             onChange={(e) => setMovieGenre(e.target.value)}
-          />
+            value={movieGenre}
+          >
+            {renderGenreOptions()}
+          </select>
         </div>
         <div className="input-container">
           <label htmlFor="runtime">Runtime</label>

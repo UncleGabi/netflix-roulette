@@ -5,7 +5,7 @@ import {
   selectAllMovies,
   setMovies,
   sortMovies,
-} from "../../Redux/MoviesSlice";
+} from "../../features/MoviesSlice";
 import axios from "axios";
 import PropTypes from "prop-types";
 
@@ -26,11 +26,12 @@ const sortingDropdownData = [
   },
 ];
 
-function MovieList({ setSelectedMovieData }) {
+function MovieList() {
   const [sortedMovieData, setSortedMovieData] = useState([]);
   const [openModal, setOpenModal] = useState(undefined);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [sorting, _setSorting] = useState({ by: "", dir: "" });
+  const [activeGenre, setActiveGenre] = useState("All");
   const dispatch = useDispatch();
 
   const movieData = useSelector(selectAllMovies);
@@ -121,8 +122,29 @@ function MovieList({ setSelectedMovieData }) {
     ].sort();
 
     return ["All", ...genres].map((genre) => (
-      <li onClick={() => handleFiltering(genre)}>{genre}</li>
+      <li
+        key={genre}
+        className={`${genre === activeGenre ? "active" : ""}`}
+        onClick={() => {
+          handleFiltering(genre);
+          setActiveGenre(genre);
+        }}
+      >
+        {genre}
+      </li>
     ));
+  };
+
+  const renderSortingArrow = () => {
+    if (sorting.dir) {
+      return sorting.dir === "asc" ? (
+        <span className="arrow-up" />
+      ) : (
+        <span className="arrow-down" />
+      );
+    } else {
+      return <></>;
+    }
   };
 
   return (
@@ -137,7 +159,7 @@ function MovieList({ setSelectedMovieData }) {
                 ? sortingDropdownData.find((item) => item.key === sorting.by)
                     .label
                 : "Select"}
-              <span className="down-arrow" />{" "}
+              {renderSortingArrow()}
             </div>
             {openDropdown && (
               <div className="sort-dropdown">
@@ -178,7 +200,7 @@ function MovieList({ setSelectedMovieData }) {
               overview={movie.overview}
               openModal={openModal}
               setOpenModal={setOpenModal}
-              setSelectedMovieData={setSelectedMovieData}
+              movie={movie}
             />
           );
         })}
