@@ -52,7 +52,8 @@
       text-transform: uppercase;
     }
 
-    input {
+    input,
+    select {
       width: 100%;
       height: 45px;
       padding: 5px 15px;
@@ -64,6 +65,14 @@
 
       &::placeholder {
         color: #fff;
+      }
+    }
+
+    select {
+      .option {
+        font-size: 16px;
+        margin: 150px;
+        padding: 15px;
       }
     }
 

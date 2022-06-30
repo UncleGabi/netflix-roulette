@@ -1,4 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  filterMovies,
+  selectAllMovies,
+  setMovies,
+  sortMovies,
+} from "../../features/MoviesSlice";
+import axios from "axios";
 import PropTypes from "prop-types";
 
 import Modal from "../Common/Modal/Modal";
@@ -13,16 +21,36 @@ const sortingDropdownData = [
     label: "Title",
   },
   {
-    key: "releaseYear",
+    key: "release_date",
     label: "Release date",
   },
 ];
 
-function MovieList({ movieData, setSelectedMovieData }) {
-  const [sortedMovieData, setSortedMovieData] = useState(movieData);
+function MovieList() {
+  const [sortedMovieData, setSortedMovieData] = useState([]);
   const [openModal, setOpenModal] = useState(undefined);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [sorting, _setSorting] = useState({ by: "", dir: "" });
+  const [activeGenre, setActiveGenre] = useState("All");
+  const dispatch = useDispatch();
+
+  const movieData = useSelector(selectAllMovies);
+
+  const fetchMovies = async () => {
+    try {
+      const movieData = await axios.get("http://localhost:4000/movies");
+      const movies = await movieData.data;
+      setSortedMovieData(movies.data);
+      dispatch(setMovies([...movies.data]));
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    fetchMovies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const setSorting = ({ by, dir }) => {
     let direction = "asc";
@@ -43,8 +71,10 @@ function MovieList({ movieData, setSelectedMovieData }) {
             break;
         }
 
+        dispatch(sortMovies({ by, dir: direction }));
         return { by, dir: direction };
       } else {
+        dispatch(sortMovies({ by, dir }));
         return { by, dir };
       }
     });
@@ -69,7 +99,7 @@ function MovieList({ movieData, setSelectedMovieData }) {
       sortMovieData({ by: sorting.by, dir: sorting.dir });
       setOpenDropdown(false);
     } else {
-      const unsortedMovieData = sortedMovieData.sort((a, b) => {
+      const unsortedMovieData = sortedMovieData?.sort((a, b) => {
         if (a.id > b.id) {
           return 1;
         } else {
@@ -80,18 +110,47 @@ function MovieList({ movieData, setSelectedMovieData }) {
       setSortedMovieData(unsortedMovieData);
       setOpenDropdown(false);
     }
-  }, [sorting, sortedMovieData, movieData]);
+  }, [sorting, sortedMovieData]);
+
+  const handleFiltering = (genre) => {
+    dispatch(filterMovies(genre));
+  };
+
+  const renderGenreFilterList = () => {
+    const genres = [
+      ...new Set(movieData.movies.map(({ genres }) => genres).flat()),
+    ].sort();
+
+    return ["All", ...genres].map((genre) => (
+      <li
+        key={genre}
+        className={`${genre === activeGenre ? "active" : ""}`}
+        onClick={() => {
+          handleFiltering(genre);
+          setActiveGenre(genre);
+        }}
+      >
+        {genre}
+      </li>
+    ));
+  };
+
+  const renderSortingArrow = () => {
+    if (sorting.dir) {
+      return sorting.dir === "asc" ? (
+        <span className="arrow-up" />
+      ) : (
+        <span className="arrow-down" />
+      );
+    } else {
+      return <></>;
+    }
+  };
 
   return (
     <main className="movies__container">
       <div className="movies-header">
-        <ul>
-          <li>All</li>
-          <li>Documentary</li>
-          <li>Comedy</li>
-          <li>Horror</li>
-          <li>Crime</li>
-        </ul>
+        <ul>{renderGenreFilterList()}</ul>
         <div className="movies-handler">
           <div className="sort">Sort by</div>
           <div className="release-date">
@@ -100,7 +159,7 @@ function MovieList({ movieData, setSelectedMovieData }) {
                 ? sortingDropdownData.find((item) => item.key === sorting.by)
                     .label
                 : "Select"}
-              <span className="down-arrow" />{" "}
+              {renderSortingArrow()}
             </div>
             {openDropdown && (
               <div className="sort-dropdown">
@@ -113,7 +172,7 @@ function MovieList({ movieData, setSelectedMovieData }) {
                 </div>
                 <div
                   onClick={() => {
-                    setSorting({ by: "releaseYear", dir: "asc" });
+                    setSorting({ by: "release_date", dir: "asc" });
                   }}
                 >
                   Release date
@@ -124,24 +183,24 @@ function MovieList({ movieData, setSelectedMovieData }) {
         </div>
       </div>
       <div className="movies-found">
-        <span>39</span> movies found
+        <span>{movieData.filteredMovies.length}</span> movies found
       </div>
       <div className="movies-list">
-        {sortedMovieData.map((movie) => {
+        {movieData.filteredMovies?.map((movie) => {
           return (
             <MovieCard
               key={movie.id}
               id={movie.id}
               title={movie.title}
-              src={movie.src}
-              genre={movie.genre}
-              rating={movie.rating}
-              releaseYear={movie.releaseYear}
-              duration={movie.duration}
+              src={movie.poster_path}
+              genre={movie.genres}
+              rating={movie.vote_average}
+              releaseYear={new Date(movie.release_date).getFullYear()}
+              duration={movie.runtime}
               overview={movie.overview}
               openModal={openModal}
               setOpenModal={setOpenModal}
-              setSelectedMovieData={setSelectedMovieData}
+              movie={movie}
             />
           );
         })}
