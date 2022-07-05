@@ -1,33 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
 import DatePicker from "react-datepicker";
 
 import "./Form.scss";
 import "react-datepicker/dist/react-datepicker.css";
-import { selectAllMovies } from "../../../../features/MoviesSlice";
+import {
+  selectAllMovies,
+  setEditedMoive,
+} from "../../../../features/MoviesSlice";
 import { CheckBox } from "@mui/icons-material";
 
-const Form = ({ title, src, genre, releaseYear }) => {
-  const [movieTitle, setMovieTitle] = useState("");
-  const [movieSrc, setMovieSrc] = useState("");
-  const [movieGenre, setMovieGenre] = useState("");
-  const [movieReleaseYear, setMovieReleaseYear] = useState("2020-01-01");
-  const [movieRating, setMovieRating] = useState("");
-  const [movieRuntime, setMovieRuntime] = useState("");
-  const [movieOverview, setMovieOverView] = useState("");
+const Form = () => {
+  const { movies, editedMovie } = useSelector(selectAllMovies);
+  const dispatch = useDispatch();
 
-  const { movies } = useSelector(selectAllMovies);
-
-  const [startDate, setStartDate] = useState(new Date());
-
-  useEffect(() => {
-    setMovieTitle(title || "");
-    setMovieSrc(src || "");
-    setMovieGenre(genre || "");
-    setMovieReleaseYear(`${releaseYear || "2020"}-01-01`);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const handleMovieDataEditing = (prop, data) =>
+    dispatch(setEditedMoive({ ...editedMovie, [prop]: data }));
 
   const renderGenreOptions = () => {
     const allGenres = [
@@ -44,63 +32,101 @@ const Form = ({ title, src, genre, releaseYear }) => {
   renderGenreOptions();
 
   return (
-    <>
+    <form>
       <div className="add-movie__form">
         <div className="input-container">
           <label htmlFor="title">Title</label>
           <input
             className="title"
+            name="title"
             type="text"
             placeholder="Title"
-            value={movieTitle}
-            onChange={(e) => setMovieTitle(e.target.value)}
+            value={editedMovie.title || ""}
+            onChange={(e) => {
+              handleMovieDataEditing("title", e.target.value);
+            }}
+            required
           />
         </div>
         <div className="input-container">
           <label htmlFor="releaseDate">Release date</label>
           <DatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
+            name="releaseDate"
+            selected={
+              editedMovie.release_date
+                ? new Date(editedMovie.release_date)
+                : new Date()
+            }
+            onChange={(date) => {
+              dispatch(
+                setEditedMoive({
+                  ...editedMovie,
+                  release_date: date.toLocaleDateString(),
+                })
+              );
+            }}
+            required
           />
         </div>
         <div className="input-container">
           <label htmlFor="movieUrl">Movie URL</label>
           <input
             className="movieUrl"
+            name="posterPath"
             type="text"
             placeholder="https://"
-            value={`https://${movieSrc}`}
-            onChange={(e) => setMovieSrc(e.target.value)}
+            value={editedMovie.poster_path || ""}
+            onChange={(e) => {
+              handleMovieDataEditing("poster_path", e.target.value);
+            }}
+            required
           />
         </div>
         <div className="input-container">
           <label htmlFor="rating">Rating</label>
           <input
             className="rating"
-            type="text"
+            name="rating"
+            type="number"
+            step="any"
             placeholder="0.0"
-            value={movieRating}
-            onChange={(e) => setMovieRating(e.target.value)}
+            min="1"
+            max="10"
+            value={editedMovie.vote_average || ""}
+            onChange={(e) => {
+              handleMovieDataEditing(
+                "vote_average",
+                e.target.value > 10 ? 10 : e.target.value
+              );
+            }}
+            required
           />
         </div>
         <div className="input-container">
           <label htmlFor="genre">Genre</label>
-          <select
+          <input
             className="genre"
-            onChange={(e) => setMovieGenre(e.target.value)}
-            value={movieGenre}
-          >
-            {renderGenreOptions()}
-          </select>
+            name="genre"
+            onChange={(e) => {
+              handleMovieDataEditing("genres", e.target.value.split(","));
+            }}
+            value={editedMovie.genres || []}
+            required
+          />
         </div>
         <div className="input-container">
           <label htmlFor="runtime">Runtime</label>
           <input
             className="runtime"
-            type="text"
+            name="runtime"
+            type="number"
+            step="1"
             placeholder="minutes"
-            value={movieRuntime}
-            onChange={(e) => setMovieRuntime(e.target.value)}
+            value={editedMovie.runtime || ""}
+            onChange={(e) => {
+              handleMovieDataEditing("runtime", e.target.value);
+            }}
+            required
           />
         </div>
       </div>
@@ -108,13 +134,17 @@ const Form = ({ title, src, genre, releaseYear }) => {
         <label htmlFor="overview">Overview</label>
         <textarea
           className="overview"
+          name="overview"
           type="text"
           placeholder="Movie description"
-          value={movieOverview}
-          onChange={(e) => setMovieOverView(e.target.value)}
+          value={editedMovie.overview || ""}
+          onChange={(e) => {
+            handleMovieDataEditing("overview", e.target.value);
+          }}
+          required
         />
       </div>
-    </>
+    </form>
   );
 };
 

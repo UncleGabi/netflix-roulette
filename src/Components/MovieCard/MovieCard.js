@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useSelector } from "react-redux/es/exports";
 import { useDispatch } from "react-redux";
-import { setSelectedMovie } from "../../features/MoviesSlice";
+import {
+  setSelectedMovie,
+  setEditedMoive,
+  selectAllMovies,
+} from "../../features/MoviesSlice";
 
 import "./MovieCard.scss";
 
@@ -13,9 +18,12 @@ const MovieCard = ({
   releaseYear,
   openModal,
   setOpenModal,
+  setMovieId,
 }) => {
   const [editDropdownOpen, setEditDropdownOpen] = useState(false);
   const dispatch = useDispatch();
+  const { filteredMovies } = useSelector(selectAllMovies);
+  const selectedMovieData = filteredMovies.find((movie) => movie.id === id);
 
   useEffect(() => {
     setEditDropdownOpen(false);
@@ -33,13 +41,20 @@ const MovieCard = ({
               +
             </div>
             <div
-              onClick={() => setOpenModal("Edit")}
+              onClick={() => {
+                setOpenModal("Edit");
+                setMovieId(id);
+                dispatch(setEditedMoive(selectedMovieData));
+              }}
               className="edit-dropdown__data"
             >
               Edit
             </div>
             <div
-              onClick={() => setOpenModal("Delete")}
+              onClick={() => {
+                setOpenModal("Delete");
+                setMovieId(id);
+              }}
               className="edit-dropdown__data"
             >
               Delete
@@ -63,7 +78,7 @@ const MovieCard = ({
         <div className="movie-title">{title}</div>
         <div className="release-year">{releaseYear}</div>
       </div>
-      <div className="genres">{genre.join(" & ")}</div>
+      <div className="genres">{genre?.join(" & ")}</div>
     </div>
   );
 };

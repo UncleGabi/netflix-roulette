@@ -4,6 +4,7 @@ const initialState = {
   movies: [],
   filteredMovies: [],
   selectedMovie: {},
+  editedMovie: {},
 };
 
 const MoviesSlice = createSlice({
@@ -53,6 +54,23 @@ const MoviesSlice = createSlice({
         );
       }
     },
+    setEditedMoive: (state, { payload }) => {
+      state.editedMovie = payload;
+    },
+    addMovie: (state, { payload }) => {
+      state.movies = [...state.movies, payload];
+      state.filteredMovies = [...state.filteredMovies, payload];
+    },
+    editMovie: (state, { payload }) => {
+      state.filteredMovies = state.filteredMovies.map((movie) =>
+        movie.id === payload.id ? { ...payload } : movie
+      );
+    },
+    deleteMovie: (state, { payload }) => {
+      state.filteredMovies = state.filteredMovies.filter(
+        ({ id }) => id !== payload
+      );
+    },
   },
 });
 
@@ -63,6 +81,10 @@ export const {
   sortMovies,
   searchMovies,
   setSelectedMovie,
+  setEditedMoive,
+  addMovie,
+  editMovie,
+  deleteMovie,
 } = MoviesSlice.actions;
 
 export default MoviesSlice.reducer;

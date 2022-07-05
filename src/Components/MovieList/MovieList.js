@@ -5,6 +5,9 @@ import {
   selectAllMovies,
   setMovies,
   sortMovies,
+  deleteMovie,
+  editMovie,
+  setEditedMoive,
 } from "../../features/MoviesSlice";
 import axios from "axios";
 import PropTypes from "prop-types";
@@ -27,14 +30,15 @@ const sortingDropdownData = [
 ];
 
 function MovieList() {
+  const { movies, filteredMovies, editedMovie } = useSelector(selectAllMovies);
+
   const [sortedMovieData, setSortedMovieData] = useState([]);
   const [openModal, setOpenModal] = useState(undefined);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [sorting, _setSorting] = useState({ by: "", dir: "" });
   const [activeGenre, setActiveGenre] = useState("All");
+  const [movieId, setMovieId] = useState(-1);
   const dispatch = useDispatch();
-
-  const movieData = useSelector(selectAllMovies);
 
   const fetchMovies = async () => {
     try {
@@ -118,7 +122,7 @@ function MovieList() {
 
   const renderGenreFilterList = () => {
     const genres = [
-      ...new Set(movieData.movies.map(({ genres }) => genres).flat()),
+      ...new Set(movies?.map(({ genres }) => genres).flat()),
     ].sort();
 
     return ["All", ...genres].map((genre) => (
@@ -183,10 +187,10 @@ function MovieList() {
         </div>
       </div>
       <div className="movies-found">
-        <span>{movieData.filteredMovies.length}</span> movies found
+        <span>{filteredMovies.length}</span> movies found
       </div>
       <div className="movies-list">
-        {movieData.filteredMovies?.map((movie) => {
+        {filteredMovies?.map((movie) => {
           return (
             <MovieCard
               key={movie.id}
@@ -200,7 +204,7 @@ function MovieList() {
               overview={movie.overview}
               openModal={openModal}
               setOpenModal={setOpenModal}
-              movie={movie}
+              setMovieId={setMovieId}
             />
           );
         })}
@@ -211,10 +215,35 @@ function MovieList() {
           width={900}
           height={750}
           primaryButtonLabel="Submit"
-          primaryButtonFn={() => undefined}
+          primaryButtonFn={() => {
+            dispatch(editMovie(editedMovie));
+            dispatch(
+              setEditedMoive({
+                title: "",
+                vote_average: 0,
+                genres: [],
+                release_date: new Date().toLocaleDateString(),
+                runtime: 0,
+                overview: "",
+              })
+            );
+            setOpenModal(false);
+          }}
           secondaryButtonLabel="Reset"
-          secondaryButtonFn={() => undefined}
+          secondaryButtonFn={() => {
+            const emptyEditedMovie = Object.fromEntries(
+              Object.entries(editedMovie).map((entry) =>
+                entry[0] === "id"
+                  ? entry
+                  : entry[0] === "release_date"
+                  ? [entry[0], new Date().toLocaleDateString()]
+                  : [entry[0], ""]
+              )
+            );
+            dispatch(setEditedMoive(emptyEditedMovie));
+          }}
           setOpenModal={setOpenModal}
+          setMovieId={setMovieId}
         >
           <Form />
         </Modal>
@@ -223,8 +252,13 @@ function MovieList() {
         <Modal
           title="Delete"
           primaryButtonLabel="Confirm"
-          primaryButtonFn={() => undefined}
+          primaryButtonFn={() => {
+            dispatch(deleteMovie(movieId));
+            setMovieId(-1);
+            setOpenModal(false);
+          }}
           setOpenModal={setOpenModal}
+          setMovieId={setMovieId}
         >
           Are you sure you want to delete this movie?
         </Modal>
