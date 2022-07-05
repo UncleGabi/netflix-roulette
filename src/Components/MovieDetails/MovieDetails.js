@@ -11,7 +11,6 @@ const MovieDetails = () => {
   const dispatch = useDispatch();
   const selectedMovieData = useSelector(selectAllMovies).selectedMovie;
 
-  const genre = selectedMovieData.genres.join(" & ");
   const minConverter = (minutes) => {
     const hrs = Math.floor(minutes / 60);
     const mins = minutes - hrs * 60;
@@ -40,10 +39,12 @@ const MovieDetails = () => {
               <span className="title">{selectedMovieData.title}</span>
               <span className="rating">{selectedMovieData.vote_average}</span>
             </div>
-            <div className="genre">{genre}</div>
+            <div className="genre">{selectedMovieData.genres.join(" & ")}</div>
           </div>
           <div className="release-duration">
-            <div className="release">{new Date(selectedMovieData.release_date).getFullYear()}</div>
+            <div className="release">
+              {new Date(selectedMovieData.release_date).getFullYear()}
+            </div>
             <div className="duration">
               {minConverter(selectedMovieData.runtime)}
             </div>

@@ -1,7 +1,10 @@
 import React, { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import {
+  addMovie,
   searchMovies,
   selectAllMovies,
+  setEditedMoive,
   setMovies,
 } from "../../features/MoviesSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,7 +18,7 @@ const Header = () => {
   const [openModal, setOpenModal] = useState(false);
   const [title, setTitle] = useState("");
   const dispatch = useDispatch();
-  const { movies } = useSelector(selectAllMovies);
+  const { movies, editedMovie } = useSelector(selectAllMovies);
 
   const handleChange = (e) => {
     setTitle(e.target.value);
@@ -32,7 +35,23 @@ const Header = () => {
         <div className="header__title-logo">
           <span>netflix</span>roulette
         </div>
-        <button onClick={() => setOpenModal(true)}>+ Add movie</button>
+        <button
+          onClick={() => {
+            setOpenModal(true);
+            dispatch(
+              setEditedMoive({
+                title: "",
+                vote_average: 0,
+                genres: [],
+                release_date: new Date().toLocaleDateString(),
+                runtime: 0,
+                overview: "",
+              })
+            );
+          }}
+        >
+          + Add movie
+        </button>
       </div>
       <div className="header__search-container">
         <h2>Find your movie</h2>
@@ -62,8 +81,18 @@ const Header = () => {
           title="Add movie"
           width={900}
           height={750}
-          primaryButtonFn={() => undefined}
-          secondaryButtonFn={() => undefined}
+          primaryButtonFn={() => {
+            dispatch(
+              addMovie({
+                id: uuidv4(),
+                ...editedMovie,
+                release_date:
+                  editedMovie.release_date || new Date().toLocaleDateString(),
+              })
+            );
+            setOpenModal(undefined);
+          }}
+          secondaryButtonFn={() => setOpenModal(undefined)}
           setOpenModal={setOpenModal}
         >
           <Form />
