@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
   addMovie,
-  searchMovies,
   selectAllMovies,
   setEditedMoive,
-  setMovies,
+  setSearchMovieTitle,
 } from "../../features/MoviesSlice";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -15,18 +15,27 @@ import Form from "../Common/Modal/Form/Form";
 import "./Header.scss";
 
 const Header = () => {
+  const { searchQuery } = useParams();
+  const navigate = useNavigate();
+
   const [openModal, setOpenModal] = useState(false);
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(searchQuery);
+  const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
-  const { movies, editedMovie } = useSelector(selectAllMovies);
+  const { editedMovie, searchMovieTitle } = useSelector(selectAllMovies);
+
+  useEffect(() => {
+    searchParams.forEach((value, key) => console.log(key, value));
+  }, [searchParams]);
 
   const handleChange = (e) => {
     setTitle(e.target.value);
-    dispatch(searchMovies(e.target.value));
+    dispatch(setSearchMovieTitle(e.target.value));
   };
 
   const handleSearch = () => {
-    dispatch(searchMovies(title));
+    const currentParams = Object.fromEntries(searchParams.entries());
+    setSearchParams({ ...currentParams, title: searchMovieTitle });
   };
 
   return (
@@ -63,12 +72,13 @@ const Header = () => {
             onChange={handleChange}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                handleSearch();
+                if (title || searchParams.get("title")) {
+                  handleSearch();
+                }
               }
 
               if (e.key === "Escape") {
                 setTitle("");
-                dispatch(setMovies(movies));
               }
             }}
             autoFocus

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useSelector } from "react-redux/es/exports";
 import { useDispatch } from "react-redux";
@@ -24,24 +25,35 @@ const MovieCard = ({
   const dispatch = useDispatch();
   const { filteredMovies } = useSelector(selectAllMovies);
   const selectedMovieData = filteredMovies.find((movie) => movie.id === id);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setEditDropdownOpen(false);
   }, [openModal]);
 
   return (
-    <div key={id} className="movie-card">
+    <div
+      key={id}
+      className="movie-card"
+      onClick={(e) => {
+        navigate(`/movies/${id}`);
+      }}
+    >
       <div className="edit-container">
         {editDropdownOpen ? (
           <div className="edit-dropdown">
             <div
               className="close-btn"
-              onClick={() => setEditDropdownOpen(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditDropdownOpen(false);
+              }}
             >
               +
             </div>
             <div
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setOpenModal("Edit");
                 setMovieId(id);
                 dispatch(setEditedMoive(selectedMovieData));
@@ -51,7 +63,8 @@ const MovieCard = ({
               Edit
             </div>
             <div
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setOpenModal("Delete");
                 setMovieId(id);
               }}
@@ -63,7 +76,10 @@ const MovieCard = ({
         ) : (
           <MoreVertIcon
             className="edit-icon"
-            onClick={() => setEditDropdownOpen(!editDropdownOpen)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditDropdownOpen(!editDropdownOpen);
+            }}
           />
         )}
       </div>
