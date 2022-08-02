@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { setSelectedMovie } from "../../features/MoviesSlice";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -8,7 +8,6 @@ import "./MovieDetails.scss";
 import { selectAllMovies } from "../../features/MoviesSlice";
 
 const MovieDetails = () => {
-  const dispatch = useDispatch();
   const selectedMovieData = useSelector(selectAllMovies).selectedMovie;
 
   const minConverter = (minutes) => {
@@ -25,11 +24,13 @@ const MovieDetails = () => {
     }
   }, [selectedMovieData]);
 
+  const navigate = useNavigate();
+
   return (
     <div id="header" className="movie-data">
       <div className="movie-data__header">
         <div>netflixroulette</div>
-        <SearchIcon onClick={() => dispatch(setSelectedMovie(-1))} />
+        <SearchIcon onClick={() => navigate("/search")} />
       </div>
       <div className="movie-data__content">
         <img src={`${selectedMovieData.poster_path}`} alt="" />
@@ -39,7 +40,7 @@ const MovieDetails = () => {
               <span className="title">{selectedMovieData.title}</span>
               <span className="rating">{selectedMovieData.vote_average}</span>
             </div>
-            <div className="genre">{selectedMovieData.genres.join(" & ")}</div>
+            <div className="genre">{selectedMovieData.genres?.join(" & ")}</div>
           </div>
           <div className="release-duration">
             <div className="release">

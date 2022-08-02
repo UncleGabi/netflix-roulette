@@ -5,12 +5,16 @@ const initialState = {
   filteredMovies: [],
   selectedMovie: {},
   editedMovie: {},
+  searchMovieTitle: "",
 };
 
 const MoviesSlice = createSlice({
   name: "movies",
   initialState,
   reducers: {
+    setSearchMovieTitle: (state, action) => {
+      return { ...state, searchMovieTitle: action.payload };
+    },
     setMovies: (state, action) => {
       return {
         ...state,
@@ -19,17 +23,20 @@ const MoviesSlice = createSlice({
       };
     },
     searchMovies: (state, { payload }) => {
-      state.filteredMovies = state.movies.filter(({ title }) => {
-        return title.toLowerCase().includes(payload.toLowerCase());
+      state.filteredMovies = state.filteredMovies.filter(({ title }) => {
+        return title?.toLowerCase().includes(payload?.toLowerCase());
       });
     },
     filterMovies: (state, action) => {
-      const payload = action.payload.toLowerCase();
+      const payload = action.payload?.toLowerCase();
+      const searchedMovies = state.movies.filter((movie) =>
+        movie.title.includes(state.searchMovieTitle)
+      );
       if (payload === "all") {
-        state.filteredMovies = state.movies;
+        state.filteredMovies = searchedMovies;
       } else {
-        state.filteredMovies = state.movies.filter(({ genres }) => {
-          const lowecaseGenres = genres.map((genre) => genre.toLowerCase());
+        state.filteredMovies = searchedMovies?.filter(({ genres }) => {
+          const lowecaseGenres = genres.map((genre) => genre?.toLowerCase());
           return lowecaseGenres.includes(payload);
         });
       }
@@ -42,7 +49,7 @@ const MoviesSlice = createSlice({
             : -a[payload.by].localeCompare(b[payload.by]);
         });
       } else {
-        state.filteredMovies = state.movies;
+        state.filteredMovies = state.filteredMovies;
       }
     },
     setSelectedMovie: (state, { payload }) => {
@@ -76,6 +83,7 @@ const MoviesSlice = createSlice({
 
 export const selectAllMovies = (state) => state.movies;
 export const {
+  setSearchMovieTitle,
   setMovies,
   filterMovies,
   sortMovies,

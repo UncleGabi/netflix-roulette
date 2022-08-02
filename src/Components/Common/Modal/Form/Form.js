@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import DatePicker from "react-datepicker";
 
@@ -13,6 +13,10 @@ import { CheckBox } from "@mui/icons-material";
 const Form = () => {
   const { movies, editedMovie } = useSelector(selectAllMovies);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log("editedMovie.release_date", editedMovie.release_date);
+  }, []);
 
   const handleMovieDataEditing = (prop, data) =>
     dispatch(setEditedMoive({ ...editedMovie, [prop]: data }));
@@ -52,10 +56,12 @@ const Form = () => {
           <label htmlFor="releaseDate">Release date</label>
           <DatePicker
             name="releaseDate"
+            dateFormat="MM-dd-yyyy"
             selected={
-              editedMovie.release_date
-                ? new Date(editedMovie.release_date)
-                : new Date()
+              new Date()
+              // editedMovie.release_date
+              //   ? new Date(`${editedMovie.release_date}`)
+              //   : new Date()
             }
             onChange={(date) => {
               dispatch(

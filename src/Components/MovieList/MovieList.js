@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   filterMovies,
@@ -8,6 +9,7 @@ import {
   deleteMovie,
   editMovie,
   setEditedMoive,
+  searchMovies,
 } from "../../features/MoviesSlice";
 import axios from "axios";
 import PropTypes from "prop-types";
@@ -30,7 +32,10 @@ const sortingDropdownData = [
 ];
 
 function MovieList() {
-  const { movies, filteredMovies, editedMovie } = useSelector(selectAllMovies);
+  const { filteredMovies, editedMovie } = useSelector(selectAllMovies);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const allParams = Object.fromEntries(searchParams.entries());
+  const navigate = useNavigate();
 
   const [sortedMovieData, setSortedMovieData] = useState([]);
   const [openModal, setOpenModal] = useState(undefined);
@@ -40,21 +45,103 @@ function MovieList() {
   const [movieId, setMovieId] = useState(-1);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    fetchMovies();
+
+    const { pathname } = window.location;
+    if (pathname === "/") {
+      navigate("/search");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const deleteSearchParam = (params) => {
+    setSearchParams(
+      Object.fromEntries(
+        Object.entries(allParams).filter(([key]) => !params.includes(key))
+      )
+    );
+  };
+
+  const updateData = () => {
+    const params = Object.fromEntries(searchParams.entries());
+    Object.entries(params).forEach(([key, value]) => {
+      if (key === "title") {
+        if (value) {
+          dispatch(searchMovies(value));
+        } else {
+          deleteSearchParam([key]);
+          const selectedGenre = searchParams.get("genre") || "All";
+          dispatch(filterMovies(selectedGenre));
+        }
+      }
+      if (key === "genre") {
+        if (value) {
+          setActiveGenre(value);
+          dispatch(filterMovies(value));
+
+          if (value === "All") {
+            deleteSearchParam([key]);
+            setActiveGenre("All");
+          }
+        }
+      }
+
+      const sortBy = searchParams.get("sortBy");
+      const sortDir = searchParams.get("sortDir");
+      if (sortBy && sortDir) {
+        dispatch(sortMovies({ by: sortBy || "", dir: sortDir || "" }));
+      } else {
+        deleteSearchParam(["sortBy", "sortDir"]);
+      }
+    });
+  };
+
+  useEffect(() => {
+    const params = Object.fromEntries(searchParams.entries());
+    Object.entries(params).forEach(([key, value]) => {
+      if (key === "title") {
+        if (value) {
+          dispatch(searchMovies(value));
+        } else {
+          deleteSearchParam([key]);
+          const selectedGenre = searchParams.get("genre") || "All";
+          dispatch(filterMovies(selectedGenre));
+        }
+      }
+
+      if (key === "genre") {
+        if (value) {
+          setActiveGenre(value);
+          dispatch(filterMovies(value));
+
+          if (value === "All") {
+            deleteSearchParam([key]);
+            setActiveGenre("All");
+          }
+        }
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  useEffect(() => {
+    dispatch(filterMovies(activeGenre));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeGenre]);
+
   const fetchMovies = async () => {
     try {
       const movieData = await axios.get("http://localhost:4000/movies");
       const movies = await movieData.data;
       setSortedMovieData(movies.data);
       dispatch(setMovies([...movies.data]));
+      updateData();
     } catch (e) {
       console.log(e);
     }
   };
-
-  useEffect(() => {
-    fetchMovies();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const setSorting = ({ by, dir }) => {
     let direction = "asc";
@@ -85,6 +172,19 @@ function MovieList() {
   };
 
   useEffect(() => {
+    let currentParams = Object.fromEntries(searchParams.entries());
+    const by = searchParams.get("sortBy");
+    const dir = searchParams.get("sortDir");
+    if (by) {
+      setSearchParams({
+        ...currentParams,
+        sortBy: sorting.by || by,
+        sortDir: sorting.dir || dir,
+      });
+    } else {
+      deleteSearchParam(["sortBy", "sortDir"]);
+    }
+
     if (sorting.dir.length) {
       const sortMovieData = ({ by, dir }) => {
         const sortedData = sortedMovieData.sort((a, b) => {
@@ -103,6 +203,7 @@ function MovieList() {
       sortMovieData({ by: sorting.by, dir: sorting.dir });
       setOpenDropdown(false);
     } else {
+      // const unsortedMovieData = sortedMovieData?.sort((a, b) => {
       const unsortedMovieData = sortedMovieData?.sort((a, b) => {
         if (a.id > b.id) {
           return 1;
@@ -114,15 +215,20 @@ function MovieList() {
       setSortedMovieData(unsortedMovieData);
       setOpenDropdown(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sorting, sortedMovieData]);
-
-  const handleFiltering = (genre) => {
-    dispatch(filterMovies(genre));
-  };
 
   const renderGenreFilterList = () => {
     const genres = [
-      ...new Set(movies?.map(({ genres }) => genres).flat()),
+      "Drama",
+      "Romance",
+      "Animation",
+      "Adventure",
+      "Family",
+      "Comedy",
+      "Fantasy",
+      "Sci-fi",
+      "Action",
     ].sort();
 
     return ["All", ...genres].map((genre) => (
@@ -130,8 +236,9 @@ function MovieList() {
         key={genre}
         className={`${genre === activeGenre ? "active" : ""}`}
         onClick={() => {
-          handleFiltering(genre);
-          setActiveGenre(genre);
+          const currentParams = Object.fromEntries(searchParams.entries());
+          setSearchParams({ ...currentParams, genre });
+          setActiveGenre(searchParams.get("genre"));
         }}
       >
         {genre}
@@ -187,7 +294,7 @@ function MovieList() {
         </div>
       </div>
       <div className="movies-found">
-        <span>{filteredMovies.length}</span> movies found
+        <span>{filteredMovies?.length}</span> movies found
       </div>
       <div className="movies-list">
         {filteredMovies?.map((movie) => {
