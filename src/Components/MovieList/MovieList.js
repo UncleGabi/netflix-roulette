@@ -63,7 +63,7 @@ function MovieList() {
     );
   };
 
-  useEffect(() => {
+  const updateData = () => {
     const params = Object.fromEntries(searchParams.entries());
     Object.entries(params).forEach(([key, value]) => {
       if (key === "title") {
@@ -78,6 +78,42 @@ function MovieList() {
       if (key === "genre") {
         if (value) {
           setActiveGenre(value);
+          dispatch(filterMovies(value));
+
+          if (value === "All") {
+            deleteSearchParam([key]);
+            setActiveGenre("All");
+          }
+        }
+      }
+
+      const sortBy = searchParams.get("sortBy");
+      const sortDir = searchParams.get("sortDir");
+      if (sortBy && sortDir) {
+        dispatch(sortMovies({ by: sortBy || "", dir: sortDir || "" }));
+      } else {
+        deleteSearchParam(["sortBy", "sortDir"]);
+      }
+    });
+  };
+
+  useEffect(() => {
+    const params = Object.fromEntries(searchParams.entries());
+    Object.entries(params).forEach(([key, value]) => {
+      if (key === "title") {
+        if (value) {
+          dispatch(searchMovies(value));
+        } else {
+          deleteSearchParam([key]);
+          const selectedGenre = searchParams.get("genre") || "All";
+          dispatch(filterMovies(selectedGenre));
+        }
+      }
+
+      if (key === "genre") {
+        if (value) {
+          setActiveGenre(value);
+          dispatch(filterMovies(value));
 
           if (value === "All") {
             deleteSearchParam([key]);
@@ -101,6 +137,7 @@ function MovieList() {
       const movies = await movieData.data;
       setSortedMovieData(movies.data);
       dispatch(setMovies([...movies.data]));
+      updateData();
     } catch (e) {
       console.log(e);
     }
@@ -136,11 +173,13 @@ function MovieList() {
 
   useEffect(() => {
     let currentParams = Object.fromEntries(searchParams.entries());
-    if (sorting.dir) {
+    const by = searchParams.get("sortBy");
+    const dir = searchParams.get("sortDir");
+    if (by) {
       setSearchParams({
         ...currentParams,
-        sortBy: sorting.by,
-        sortDir: sorting.dir,
+        sortBy: sorting.by || by,
+        sortDir: sorting.dir || dir,
       });
     } else {
       deleteSearchParam(["sortBy", "sortDir"]);

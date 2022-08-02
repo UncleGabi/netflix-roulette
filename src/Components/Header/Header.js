@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
   addMovie,
@@ -15,12 +15,9 @@ import Form from "../Common/Modal/Form/Form";
 import "./Header.scss";
 
 const Header = () => {
-  const { searchQuery } = useParams();
-  const navigate = useNavigate();
-
   const [openModal, setOpenModal] = useState(false);
-  const [title, setTitle] = useState(searchQuery);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [title, setTitle] = useState(searchParams.get("title"));
   const dispatch = useDispatch();
   const { editedMovie, searchMovieTitle } = useSelector(selectAllMovies);
 
