@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   filterMovies,
@@ -10,6 +10,7 @@ import {
   editMovie,
   setEditedMoive,
   searchMovies,
+  setSelectedMovie,
 } from "../../features/MoviesSlice";
 import axios from "axios";
 import PropTypes from "prop-types";
@@ -44,14 +45,16 @@ function MovieList() {
   const [activeGenre, setActiveGenre] = useState("All");
   const [movieId, setMovieId] = useState(-1);
   const dispatch = useDispatch();
+  const location = useLocation();
 
   useEffect(() => {
     fetchMovies();
 
-    const { pathname } = window.location;
+    const { pathname } = location;
     if (pathname === "/") {
       navigate("/search");
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -138,6 +141,12 @@ function MovieList() {
       setSortedMovieData(movies.data);
       dispatch(setMovies([...movies.data]));
       updateData();
+
+      if (location.pathname.includes("movies")) {
+        console.log("location", location.pathname);
+        const movieId = location.pathname.split("/")[2];
+        dispatch(setSelectedMovie(parseInt(movieId)));
+      }
     } catch (e) {
       console.log(e);
     }
@@ -303,7 +312,7 @@ function MovieList() {
               key={movie.id}
               id={movie.id}
               title={movie.title}
-              src={movie.poster_path}
+              src={movie?.poster_path}
               genre={movie.genres}
               rating={movie.vote_average}
               releaseYear={new Date(movie.release_date).getFullYear()}

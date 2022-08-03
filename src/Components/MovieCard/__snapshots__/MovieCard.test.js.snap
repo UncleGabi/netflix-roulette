@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MovieCard component should render correctly 1`] = `
+<div
+  className="movie-card"
+  onClick={[Function]}
+>
+  <div
+    className="edit-container"
+  >
+    <svg
+      aria-hidden={true}
+      className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium edit-icon css-i4bv87-MuiSvgIcon-root"
+      data-testid="MoreVertIcon"
+      focusable="false"
+      onClick={[Function]}
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+      />
+    </svg>
+  </div>
+  <img
+    alt="Movie title"
+    onClick={[Function]}
+    src="https://movie.com"
+  />
+  <div
+    className="movie-details"
+  >
+    <div
+      className="movie-title"
+    >
+      Movie title
+    </div>
+    <div
+      className="release-year"
+    >
+      2022
+    </div>
+  </div>
+  <div
+    className="genres"
+  >
+    Comedy & Adventure
+  </div>
+</div>
+`;
