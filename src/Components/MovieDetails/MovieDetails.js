@@ -33,24 +33,24 @@ const MovieDetails = () => {
         <SearchIcon onClick={() => navigate("/search")} />
       </div>
       <div className="movie-data__content">
-        <img src={`${selectedMovieData.poster_path}`} alt="" />
+        <img src={`${selectedMovieData?.poster_path}`} alt="" />
         <div className="movie-data__content-details">
           <div className="main-details">
             <div className="title-rating">
-              <span className="title">{selectedMovieData.title}</span>
-              <span className="rating">{selectedMovieData.vote_average}</span>
+              <span className="title">{selectedMovieData?.title}</span>
+              <span className="rating">{selectedMovieData?.vote_average}</span>
             </div>
-            <div className="genre">{selectedMovieData.genres?.join(" & ")}</div>
+            <div className="genre">{selectedMovieData?.genres?.join(" & ")}</div>
           </div>
           <div className="release-duration">
             <div className="release">
-              {new Date(selectedMovieData.release_date).getFullYear()}
+              {new Date(selectedMovieData?.release_date).getFullYear()}
             </div>
             <div className="duration">
-              {minConverter(selectedMovieData.runtime)}
+              {minConverter(selectedMovieData?.runtime)}
             </div>
           </div>
-          <div className="overview">{selectedMovieData.overview}</div>
+          <div className="overview">{selectedMovieData?.overview}</div>
         </div>
       </div>
     </div>

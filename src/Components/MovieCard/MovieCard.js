@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { useSelector } from "react-redux/es/exports";
-import { useDispatch } from "react-redux";
+// import { useSelector } from "react-redux/es/exports";
+// import { useDispatch } from "react-redux";
+import {
+  useAppDispatch,
+  useAppNavigate,
+  useAppSelector,
+} from "../../app/redux-hooks";
 import {
   setSelectedMovie,
   setEditedMoive,
@@ -22,10 +26,10 @@ const MovieCard = ({
   setMovieId,
 }) => {
   const [editDropdownOpen, setEditDropdownOpen] = useState(false);
-  const dispatch = useDispatch();
-  const { filteredMovies } = useSelector(selectAllMovies);
-  const selectedMovieData = filteredMovies.find((movie) => movie.id === id);
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { filteredMovies } = useAppSelector(selectAllMovies);
+  const selectedMovieData = filteredMovies?.find((movie) => movie.id === id);
+  const navigate = useAppNavigate();
 
   useEffect(() => {
     setEditDropdownOpen(false);
@@ -35,7 +39,7 @@ const MovieCard = ({
     <div
       key={id}
       className="movie-card"
-      onClick={(e) => {
+      onClick={() => {
         navigate(`/movies/${id}`);
       }}
     >
@@ -63,12 +67,13 @@ const MovieCard = ({
               Edit
             </div>
             <div
+              id="delete"
+              className="edit-dropdown__data"
               onClick={(e) => {
                 e.stopPropagation();
                 setOpenModal("Delete");
                 setMovieId(id);
               }}
-              className="edit-dropdown__data"
             >
               Delete
             </div>
@@ -94,7 +99,9 @@ const MovieCard = ({
         <div className="movie-title">{title}</div>
         <div className="release-year">{releaseYear}</div>
       </div>
-      <div className="genres">{genre?.join(" & ")}</div>
+      <div className="genres">
+        {Array.isArray(genre) ? genre.join(" & ") : ""}
+      </div>
     </div>
   );
 };

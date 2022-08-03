@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Header component should render Header component correctly 1`] = `
+<header
+  className="header"
+>
+  <div
+    className="header__title"
+  >
+    <div
+      className="header__title-logo"
+    >
+      <span>
+        netflix
+      </span>
+      roulette
+    </div>
+    <button
+      onClick={[Function]}
+    >
+      + Add movie
+    </button>
+  </div>
+  <div
+    className="header__search-container"
+  >
+    <h2>
+      Find your movie
+    </h2>
+    <div>
+      <input
+        autoFocus={true}
+        onChange={[Function]}
+        onKeyDown={[Function]}
+        placeholder="What do you want to watch?"
+        type="text"
+        value=""
+      />
+      <button
+        id="search"
+        onClick={[Function]}
+      >
+        Search
+      </button>
+    </div>
+  </div>
+</header>
+`;

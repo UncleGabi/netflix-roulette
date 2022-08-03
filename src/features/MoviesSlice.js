@@ -56,7 +56,7 @@ const MoviesSlice = createSlice({
       if (payload === -1) {
         state.selectedMovie = {};
       } else {
-        state.selectedMovie = state.filteredMovies.find(
+        state.selectedMovie = state.filteredMovies?.find(
           ({ id }) => id === payload
         );
       }

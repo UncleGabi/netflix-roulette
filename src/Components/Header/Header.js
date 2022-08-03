@@ -7,7 +7,8 @@ import {
   setEditedMoive,
   setSearchMovieTitle,
 } from "../../features/MoviesSlice";
-import { useDispatch, useSelector } from "react-redux";
+// import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../../app/redux-hooks";
 
 import Modal from "../Common/Modal/Modal";
 import Form from "../Common/Modal/Form/Form";
@@ -17,13 +18,9 @@ import "./Header.scss";
 const Header = () => {
   const [openModal, setOpenModal] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [title, setTitle] = useState(searchParams.get("title"));
-  const dispatch = useDispatch();
-  const { editedMovie, searchMovieTitle } = useSelector(selectAllMovies);
-
-  useEffect(() => {
-    searchParams.forEach((value, key) => console.log(key, value));
-  }, [searchParams]);
+  const [title, setTitle] = useState(searchParams.get("title") || "");
+  const dispatch = useAppDispatch();
+  const { editedMovie, searchMovieTitle } = useAppSelector(selectAllMovies);
 
   const handleChange = (e) => {
     setTitle(e.target.value);
@@ -80,7 +77,9 @@ const Header = () => {
             }}
             autoFocus
           />
-          <button onClick={handleSearch}>Search</button>
+          <button id="search" onClick={handleSearch}>
+            Search
+          </button>
         </div>
       </div>
       {openModal && (
